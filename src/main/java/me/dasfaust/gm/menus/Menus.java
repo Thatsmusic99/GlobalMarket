@@ -123,17 +123,15 @@ public class Menus
 			@Override
 			public WrappedStack getItemStack(MarketViewer viewer, StorageHandler storage)
 			{
-				return new WrappedStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+				return new WrappedStack(new ItemStack(Material.RED_STAINED_GLASS_PANE));
 			}
 			
 			@Override
 			public WrappedStack onItemCreated(MarketViewer viewer, WrappedStack stack)
 			{
 				stack.setDisplayName(LocaleHandler.get().get("menu_stock_slot"));
-				stack.addLoreLast(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_stock_amount", Core.instance.config().get(Defaults.STOCK_SLOTS_SIZE)),
-						LocaleHandler.get().get("menu_stock_action_swap")
-				}));
+				stack.addLoreLast(Arrays.asList(LocaleHandler.get().get("menu_stock_amount", Core.instance.config().get(Defaults.STOCK_SLOTS_SIZE)),
+						LocaleHandler.get().get("menu_stock_action_swap")));
 				return stack.clone().tag();
 			}
 			
@@ -177,9 +175,6 @@ public class Menus
 							StorageHelper.updateStockAmount(stock, stock.amount + viewer.lastStackOnCursor.getAmount());
 							player.setItemOnCursor(new ItemStack(Material.AIR));
 						}
-						viewer.reset();
-						viewer.buildMenu();
-						return null;
 					}
 					else
 					{
@@ -192,10 +187,10 @@ public class Menus
 						stock.owner = player.getUniqueId();
 						player.setItemOnCursor(new ItemStack(Material.AIR));
 						Core.instance.storage().store(stock);
-						viewer.reset();
-						viewer.buildMenu();
-						return null;
 					}
+					viewer.reset();
+					viewer.buildMenu();
+					return null;
 				}
 				return stack;
 			}
@@ -223,7 +218,7 @@ public class Menus
 		public Map<Long, StockedItem> getObjects(MarketViewer viewer)
 		{
 			int maxStock = Core.instance.config().get(Defaults.STOCK_SLOTS);
-			Map<Long, StockedItem> map = new LinkedHashMap<Long, StockedItem>();
+			Map<Long, StockedItem> map = new LinkedHashMap<>();
 			map.putAll(Core.instance.storage().getAll(StockedItem.class, StorageHelper.allStockFor(viewer.uuid)));
 			long slot = -1;
 			while(map.size() < maxStock)
@@ -269,7 +264,7 @@ public class Menus
 			@Override
 			public WrappedStack getItemStack(MarketViewer viewer, StorageHandler storage)
 			{
-				return new WrappedStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+				return new WrappedStack(new ItemStack(Material.RED_STAINED_GLASS_PANE));
 			}
 
 			@Override
@@ -277,10 +272,8 @@ public class Menus
 			{
 				double fee = Core.instance.config().get(Defaults.STORAGE_STORE_AMOUNT);
 				stack.setDisplayName(ChatColor.AQUA + "Open Storage Slot");
-				stack.addLoreLast(Arrays.asList(new String[] {
-						ChatColor.YELLOW + "<swap an item to store it>",
-						ChatColor.YELLOW + "Price: " + Core.instance.econ().format(fee)
-				}));
+				stack.addLoreLast(Arrays.asList(ChatColor.YELLOW + "<swap an item to store it>",
+						ChatColor.YELLOW + "Price: " + Core.instance.econ().format(fee)));
 				return stack.clone().tag();
 			}
 
@@ -349,7 +342,7 @@ public class Menus
 		public Map<Long, StoredItem> getObjects(MarketViewer viewer)
 		{
 			int maxStock = Core.instance.config().get(Defaults.STOCK_SLOTS);
-			Map<Long, StoredItem> map = new LinkedHashMap<Long, StoredItem>();
+			Map<Long, StoredItem> map = new LinkedHashMap<>();
 			map.putAll(Core.instance.storage().getAll(StoredItem.class, StorageHelper.allStorageFor(viewer.uuid)));
 			map.put(-1L, new StorageSlot(-1));
 			return map;
@@ -380,7 +373,7 @@ public class Menus
 		public String getItemId()
 		{
 			String configured = Core.instance.config().get(new Config.ConfigDefault<String>("menu_function_items.FUNC_PREVPAGE", null, null));
-			return configured != null ? configured : Core.isCauldron ? "minecraft:map:0" : Material.EMPTY_MAP.toString() + ":0";
+			return configured != null ? configured : Core.isCauldron ? "minecraft:map:0" : Material.MAP.toString() + ":0";
 		}
 
 		@Override
@@ -388,9 +381,7 @@ public class Menus
 		{
 			WrappedStack stack = Config.functionItems.get("FUNC_PREVPAGE").clone();
 			stack.setDisplayName(LocaleHandler.get().get("menu_nav_prev_page"));
-			stack.setLore(Arrays.asList(new String[] {
-					LocaleHandler.get().get("menu_nav_prev_page_info", viewer.currentPage - 1)
-			}));
+			stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_prev_page_info", viewer.currentPage - 1)));
 			return stack.clone().tag();
 		}
 
@@ -415,7 +406,7 @@ public class Menus
 		public String getItemId()
 		{
 			String configured = Core.instance.config().get(new Config.ConfigDefault<String>("menu_function_items.FUNC_NEXTPAGE", null, null));
-			return configured != null ? configured : Core.isCauldron ? "minecraft:map:0" : Material.EMPTY_MAP.toString() + ":0";
+			return configured != null ? configured : Material.MAP.name();
 		}
 
 		@Override
@@ -423,9 +414,7 @@ public class Menus
 		{
 			WrappedStack stack = Config.functionItems.get("FUNC_NEXTPAGE").clone();
 			stack.setDisplayName(LocaleHandler.get().get("menu_nav_next_page"));
-			stack.setLore(Arrays.asList(new String[] {
-					LocaleHandler.get().get("menu_nav_next_page_info", viewer.currentPage + 1)
-			}));
+			stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_next_page_info", viewer.currentPage + 1)));
 			return stack.clone().tag();
 		}
 
@@ -460,16 +449,12 @@ public class Menus
 			if (viewer.menu == MENU_LISTINGS || viewer.menu == MENU_SERVER_LISTINGS)
 			{
 				stack.setDisplayName(LocaleHandler.get().get("menu_nav_stock"));
-				stack.setLore(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_nav_stock_info")
-				}));
+				stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_stock_info")));
 			}
 			else
 			{
 				stack.setDisplayName(LocaleHandler.get().get("menu_nav_listings"));
-				stack.setLore(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_nav_listings_info")
-				}));
+				stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_listings_info")));
 			}
 			return stack.clone().tag();
 		}
@@ -542,16 +527,12 @@ public class Menus
 			{
 				stack.makeGlow();
 				stack.setDisplayName(LocaleHandler.get().get("menu_nav_serverlistings"));
-				stack.setLore(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_nav_serverlistings_info")
-				}));
+				stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_serverlistings_info")));
 			}
 			else
 			{
 				stack.setDisplayName(LocaleHandler.get().get("menu_nav_listings"));
-				stack.setLore(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_nav_listings_info")
-				}));
+				stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_listings_info")));
 			}
 			return stack.clone().tag();
 		}
@@ -623,16 +604,12 @@ public class Menus
 			if (viewer.menu == MENU_LISTINGS || viewer.menu == MENU_SERVER_LISTINGS)
 			{
 				stack.setDisplayName(ChatColor.AQUA + "Long Term Storage");
-				stack.setLore(Arrays.asList(new String[] {
-						ChatColor.GRAY + "Store items for a fee"
-				}));
+				stack.setLore(Arrays.asList(ChatColor.GRAY + "Store items for a fee"));
 			}
 			else
 			{
 				stack.setDisplayName(LocaleHandler.get().get("menu_nav_listings"));
-				stack.setLore(Arrays.asList(new String[] {
-						LocaleHandler.get().get("menu_nav_listings_info")
-				}));
+				stack.setLore(Arrays.asList(LocaleHandler.get().get("menu_nav_listings_info")));
 			}
 			return stack.clone().tag();
 		}
@@ -730,7 +707,7 @@ public class Menus
 				else
 				{
 					Core.instance.handler().removeViewer(viewer);
-					Menus.MENU_CREATION_LISTING.sessions.put(viewer.uuid, new CreationSession(viewer.lastStackOnCursor));
+					CreationMenu.sessions.put(viewer.uuid, new CreationSession(viewer.lastStackOnCursor));
 					new BukkitRunnable()
 					{
 						@Override

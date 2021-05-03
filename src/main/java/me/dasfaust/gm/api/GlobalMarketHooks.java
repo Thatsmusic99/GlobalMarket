@@ -8,8 +8,8 @@ import me.dasfaust.gm.storage.abs.MarketObject;
 import me.dasfaust.gm.storage.abs.StorageHandler;
 import me.dasfaust.gm.tools.GMLogger;
 import me.dasfaust.gm.tools.LocaleHandler;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 public class GlobalMarketHooks
 {

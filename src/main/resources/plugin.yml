@@ -1,6 +1,8 @@
 name: GlobalMarket
 main: me.dasfaust.gm.Core
-version: '@version@'
+version: '2.0.0'
+authors: ["Dasfaust", "Thatsmusic99"]
+api-version: 1.13
 permissions:
    globalmarket.use:
        default: true

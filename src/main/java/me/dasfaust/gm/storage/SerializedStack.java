@@ -5,12 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import me.dasfaust.gm.trade.WrappedStack;
 
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,7 +40,7 @@ public class SerializedStack
 	        {
 	            output.close();
 	        }
-	        this.nbt = Base64.encodeBase64String(stream.toByteArray());
+	        this.nbt = new String(Base64.getEncoder().encode(stream.toByteArray()));
 	        stream.close();
 		}
 	}
@@ -76,7 +76,7 @@ public class SerializedStack
 		WrappedStack stack = new WrappedStack(base);
 		if (nbt != null)
 		{
-			ByteArrayInputStream stream = new ByteArrayInputStream(Base64.decodeBase64(nbt));
+			ByteArrayInputStream stream = new ByteArrayInputStream(Base64.getDecoder().decode(nbt));
 			DataInputStream input = null;
 			NbtCompound comp = NbtBinarySerializer.DEFAULT.deserializeCompound(input = new DataInputStream(new GZIPInputStream(stream)));
             input.close();

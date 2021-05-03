@@ -1,10 +1,6 @@
 package me.dasfaust.gm.menus;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import me.dasfaust.gm.config.Config;
 import org.bukkit.ChatColor;
@@ -27,15 +23,15 @@ import me.dasfaust.gm.trade.WrappedStack;
 
 public class CreationMenu extends MenuBase<MarketObject>
 {
-	public static Map<UUID, CreationSession> sessions = new HashMap<UUID, CreationSession>();
+	public static Map<UUID, CreationSession> sessions = new HashMap<>();
 	
 	public static FunctionButton FUNC_CREATE_LISTING_CANCEL = new FunctionButton()
 	{
 		@Override
 		public String getItemId()
 		{
-			String configured = Core.instance.config().get(new Config.ConfigDefault<String>("menu_function_items.FUNC_CREATE_LISTING_CANCEL", null, null));
-			return configured != null ? configured : Core.isCauldron ? "minecraft:stained_glass_pane:14" : Material.STAINED_GLASS_PANE.toString() + ":14";
+			String configured = Core.instance.config().get(new Config.ConfigDefault<>("menu_function_items.FUNC_CREATE_LISTING_CANCEL", null, null));
+			return configured != null ? configured : Material.RED_STAINED_GLASS_PANE.name();
 		}
 
 		@Override
@@ -200,8 +196,8 @@ public class CreationMenu extends MenuBase<MarketObject>
 		@Override
 		public String getItemId()
 		{
-			String configured = Core.instance.config().get(new Config.ConfigDefault<String>("menu_function_items.FUNC_CREATE_LISTING_CREATE", null, null));
-			return configured != null ? configured : Core.isCauldron ? "minecraft:stained_glass_pane:5" : Material.STAINED_GLASS_PANE.toString() + ":5";
+			String configured = Core.instance.config().get(new Config.ConfigDefault<>("menu_function_items.FUNC_CREATE_LISTING_CREATE", null, null));
+			return configured != null ? configured : Material.LIME_STAINED_GLASS_PANE.name();
 		}
 
 		@Override
@@ -209,7 +205,7 @@ public class CreationMenu extends MenuBase<MarketObject>
 		{
 			return Config.functionItems.get("FUNC_CREATE_LISTING_CREATE").clone()
 			.setDisplayName(LocaleHandler.get().get("menu_creation_create"))
-			.addLoreLast(Arrays.asList(new String[] {LocaleHandler.get().get("menu_creation_create_info")})).tag();
+			.addLoreLast(Collections.singletonList(LocaleHandler.get().get("menu_creation_create_info"))).tag();
 		}
 
 		@Override
@@ -229,7 +225,12 @@ public class CreationMenu extends MenuBase<MarketObject>
 						|| !player.getInventory().removeItem(ses.stack.checkNbt().setAmount(ses.amount).bukkit()).isEmpty())
 				{
 					List<String> lore = viewer.lastStackClicked.getLore();
-					lore.set(lore.size() - 1, LocaleHandler.get().get("general_not_in_inventory"));
+					if (lore.isEmpty()) {
+						lore.add(LocaleHandler.get().get("general_not_in_inventory"));
+					} else {
+						lore.set(lore.size() - 1, LocaleHandler.get().get("general_not_in_inventory"));
+					}
+
 					viewer.lastStackClicked.setLore(lore);
 					return viewer.lastStackClicked;
 				}
@@ -239,7 +240,13 @@ public class CreationMenu extends MenuBase<MarketObject>
 				if (Core.instance.storage().getAll(StockedItem.class, StorageHelper.allStockFor(viewer.uuid, ses.stock.itemId)).isEmpty())
 				{
 					List<String> lore = viewer.lastStackClicked.getLore();
-					lore.set(lore.size() - 1, ChatColor.RED + LocaleHandler.get().get("general_no_stock"));
+					if (lore.isEmpty()) {
+						lore.add(ChatColor.RED + LocaleHandler.get().get("general_no_stock"));
+					} else {
+						lore.set(lore.size() - 1, ChatColor.RED + LocaleHandler.get().get("general_no_stock"));
+					}
+
+
 					viewer.lastStackClicked.setLore(lore);
 					return viewer.lastStackClicked;
 				}

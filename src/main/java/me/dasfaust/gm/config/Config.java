@@ -1,12 +1,6 @@
 package me.dasfaust.gm.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
-
-import com.comphenix.protocol.utility.MinecraftReflection;
+import me.dasfaust.gm.Core;
 import me.dasfaust.gm.menus.CreationMenu;
 import me.dasfaust.gm.menus.MenuBase;
 import me.dasfaust.gm.menus.Menus;
@@ -14,11 +8,14 @@ import me.dasfaust.gm.tools.GMLogger;
 import me.dasfaust.gm.trade.WrappedStack;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
-
-import me.dasfaust.gm.Core;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class Config
 {
@@ -224,19 +221,14 @@ public class Config
         {
             String value = config.getString("menu_function_items." + key);
             WrappedStack stack;
-            String[] id = value.split(":");
-            if (id.length == 2)
-            {
-                stack = new WrappedStack(new ItemStack(Material.getMaterial(id[0]))).setDamage(Integer.parseInt(id[1]));
+            if (Material.getMaterial(value) != null) {
+                stack = new WrappedStack(new ItemStack(Material.getMaterial(value)));
+                functionItems.put(key.replace("menu_function_items.", ""), stack);
+                GMLogger.debug(String.format("Function ItemStack built: %s:%s", key, stack.getMaterial().toString()));
+            } else {
+                GMLogger.warning(String.format("%s is null!", value));
             }
-            else
-            {
-                Object nms = cpw.mods.fml.common.registry.GameRegistry.findItemStack(id[0], id[1], 1);
-                ItemStack itemStack = MinecraftReflection.getBukkitItemStack(nms);
-                stack = new WrappedStack(itemStack).setDamage(Integer.parseInt(id[2]));
-            }
-            functionItems.put(key.replace("menu_function_items.", ""), stack);
-            GMLogger.debug(String.format("Function ItemStack built: %s:%s", key, stack.getMaterial().toString()));
+
         }
 
         isLoading = false;

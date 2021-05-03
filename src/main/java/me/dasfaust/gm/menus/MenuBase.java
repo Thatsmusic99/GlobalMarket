@@ -13,7 +13,7 @@ import me.dasfaust.gm.trade.WrappedStack;
 
 public abstract class MenuBase<T extends MarketObject>
 {
-	public Map<Integer, FunctionButton> functions = new HashMap<Integer, FunctionButton>();
+	public Map<Integer, FunctionButton> functions = new HashMap<>();
 
 	public abstract String getName();
 

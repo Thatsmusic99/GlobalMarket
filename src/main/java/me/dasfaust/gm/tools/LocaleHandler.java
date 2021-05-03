@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.commons.io.FilenameUtils;
 import org.bukkit.ChatColor;
 
 import com.google.gson.Gson;
@@ -51,7 +50,8 @@ public class LocaleHandler
                         json += s;
                     }
                     reader.close();
-                    String id = FilenameUtils.getBaseName(entry.getName());
+                    String id = entry.getName().substring(entry.getName().lastIndexOf("/") + 1, entry.getName().lastIndexOf("."));
+                    GMLogger.debug(String.format("Locale file located: '%s': %s", id, entry.getName()));
                     locales.put(id, gson.fromJson(json, Locale.class));
                     GMLogger.debug(String.format("Locale file loaded as '%s': %s", id, entry.getName()));
                 }

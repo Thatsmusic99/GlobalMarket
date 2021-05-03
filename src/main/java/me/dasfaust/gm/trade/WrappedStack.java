@@ -47,7 +47,7 @@ public class WrappedStack
 		}
 		catch(Exception e)
 		{
-			if (!base.hasItemMeta())
+			if (base.getItemMeta() == null)
 			{
 				//throw new IllegalArgumentException("Cannot wrap type " + base.getType().toString());
 				GMLogger.debug(String.format("Material %s (%s) cannot have ItemMeta. NBT is null", base.getType().toString(), base.getType().getId()));
@@ -137,6 +137,9 @@ public class WrappedStack
 		{
 			clone.setNbt((NbtCompound) nbt.deepClone());
 		}
+		if (base.hasItemMeta() && clone.base.getItemMeta() != null) {
+			clone.base.setItemMeta(base.getItemMeta());
+		}
 		return clone;
 	}
 	
@@ -166,7 +169,7 @@ public class WrappedStack
 	 */
 	public boolean hasDisplayName()
 	{
-		return getDisplayTag().containsKey("Name");
+		return base.getItemMeta() != null && base.getItemMeta().hasDisplayName();
 	}
 	
 	/**
@@ -175,7 +178,7 @@ public class WrappedStack
 	 */
 	public String getDisplayName()
 	{
-		return getDisplayTag().getString("Name");
+		return base.getItemMeta() != null ? base.getItemMeta().getDisplayName() : null;
 	}
 	
 	/**
@@ -185,9 +188,13 @@ public class WrappedStack
 	 */
 	public WrappedStack setDisplayName(String name)
 	{
-		NbtCompound disp = getDisplayTag();
-		disp.remove("Name");
-		disp.put("Name", name);
+		if (base.getItemMeta() != null) {
+			ItemMeta meta = base.getItemMeta();
+			meta.setDisplayName(name);
+			base.setItemMeta(meta);
+		}
+		GMLogger.debug(String.format("Set display name of stack, %s, Fetched from method: %s, Actual metadata: %s", name, getDisplayName(), base.getItemMeta() == null ? "No such metadata" : base.getItemMeta().getDisplayName()));
+
 		return this;
 	}
 	
@@ -197,7 +204,7 @@ public class WrappedStack
 	 */
 	public boolean hasLore()
 	{
-		return getDisplayTag().containsKey("Lore");
+		return base.getItemMeta() != null && base.getItemMeta().hasLore();
 	}
 	
 	/**
@@ -206,11 +213,9 @@ public class WrappedStack
 	 */
 	public List<String> getLore()
 	{
-		List<String> lore = new ArrayList<String>();
-        for (Object ob : nbt.getCompound("display").getList("Lore"))
-        {
-            lore.add(ob.toString());
-        }
+		List<String> lore = new ArrayList<>();
+		if (base.getItemMeta() == null) return lore;
+		lore.addAll(base.getItemMeta().getLore());
         return lore;
 	}
 	
@@ -221,9 +226,11 @@ public class WrappedStack
 	 */
 	public WrappedStack setLore(List<String> lore)
 	{
-		NbtCompound disp = getDisplayTag();
-		disp.remove("Lore");
-		disp.put(NbtFactory.ofList("Lore", lore));
+		if (base.getItemMeta() != null) {
+			ItemMeta meta = base.getItemMeta();
+			meta.setLore(lore);
+			base.setItemMeta(meta);
+		}
 		return this;
 	}
 	
@@ -257,12 +264,8 @@ public class WrappedStack
 		if (hasLore())
 		{
 			lore.addAll(getLore());
-			setLore(lore);
 		}
-		else
-		{
-			setLore(lore);
-		}
+		setLore(lore);
 		return this;
 	}
 	
@@ -297,7 +300,7 @@ public class WrappedStack
 		nbt.put(NbtFactory.of("market", 1));
 		if (Core.instance.config().get(Config.Defaults.ENABLE_DEBUG))
 		{
-			addLoreLast(Arrays.asList(new String[]{"Has tag"}));
+			addLoreLast(Arrays.asList("Has tag"));
 		}
 		return this;
 	}

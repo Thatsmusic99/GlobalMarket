@@ -1,24 +1,5 @@
 package me.dasfaust.gm.storage;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.Protocol;
-import redis.clients.johm.JOhm;
 import me.dasfaust.gm.Core;
 import me.dasfaust.gm.MenuHandler;
 import me.dasfaust.gm.menus.MarketViewer;
@@ -26,6 +7,19 @@ import me.dasfaust.gm.storage.abs.MarketObject;
 import me.dasfaust.gm.storage.abs.StorageHandler;
 import me.dasfaust.gm.tools.GMLogger;
 import me.dasfaust.gm.trade.WrappedStack;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.*;
+import redis.clients.johm.JOhm;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 public class RedisStorage extends StorageHandler
 {
@@ -314,7 +308,7 @@ public class RedisStorage extends StorageHandler
             public void run()
             {
 				Jedis jedis = pool.getResource();
-				jedis.subscribe(new JedisPubSub() 
+				jedis.subscribe(new JedisPubSub()
 				{
 					@Override
 					public void onMessage(String channel, String message)
